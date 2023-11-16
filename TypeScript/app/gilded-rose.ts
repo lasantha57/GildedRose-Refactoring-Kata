@@ -31,6 +31,7 @@ export class GildedRose {
           this.updateAgedBrie(item);
           break;
         case ItemType.Sulfuras:
+          // Legenday item, no need to update
           break
         case ItemType.BackstagePasses:
           this.updateBackStagePasses(item);
@@ -42,6 +43,9 @@ export class GildedRose {
           this.updateNormalItem(item);
           break;
       }
+
+      this.validateQualityBounds(item);
+      this.updateSellIn(item);
     }
 
     return this.items;
@@ -51,53 +55,41 @@ export class GildedRose {
     if (item.quality < 50) {
       item.quality += 1;
     }
-
-    item.sellIn -= 1;
-
-    if (item.sellIn < 0 && item.quality < 50) {
-      item.quality += 1;
-    }
   }
 
   private updateBackStagePasses(item: Item) {
-    if (item.quality < 50) {
-      item.quality += 1;
-      if (item.sellIn <= 10 && item.quality < 50) {
-        item.quality += 1;
-      }
-      if (item.sellIn <= 5 && item.quality < 50) {
-        item.quality += 1;
-      }
-    }
-
-    item.sellIn -= 1;
-
-    if (item.sellIn < 0) {
+    if (item.sellIn <= 0) {
       item.quality = 0;
+    } else if (item.sellIn <= 5) {
+      item.quality += 3;
+    } else if (item.sellIn <= 10) {
+      item.quality += 2;
+    } else {
+      item.quality += 1;
     }
   }
 
   private updateConjured(item: Item) {
     if (item.quality > 0) {
-      item.quality -= 2;
-    }
-
-    item.sellIn -= 1;
-
-    if (item.sellIn < 0 && item.quality > 0) {
-      item.quality -= 2;
+      item.quality -= item.sellIn > 0 ? 2 : 4;
     }
   }
 
   private updateNormalItem(item: Item) {
     if (item.quality > 0) {
-      item.quality -= 1;
+      item.quality -= item.sellIn > 0 ? 1 : 2;
     }
+  }
 
-    item.sellIn -= 1;
-
-    if (item.sellIn < 0 && item.quality > 0) {
-      item.quality -= 1;
+  private updateSellIn(item: Item) {
+    if (item.name !== ItemType.Sulfuras) {
+      item.sellIn -= 1;
     }
+  }
+
+  private validateQualityBounds(item: Item) {
+    const maxQualityValue = item.name === ItemType.Sulfuras ? 80 : 50;
+    // Ensure quality is within bounds
+    item.quality = Math.max(0, Math.min(maxQualityValue, item.quality));
   }
 }
