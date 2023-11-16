@@ -92,7 +92,7 @@ describe('Gilded Rose', () => {
   });
 
   describe('Conjured item', () => {
-    it('should decrease quality twise as fast', () => {
+    it('should decrease quality twise as fast as Normal Item', () => {
       const gildedRose = new GildedRose([new Item('Conjured', 5, 10)]);
       const items = gildedRose.updateQuality();
       expect(items[0].name).toBe('Conjured');
