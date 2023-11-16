@@ -14,6 +14,7 @@ enum ItemType {
   AgedBrie = 'Aged Brie',
   BackstagePasses = 'Backstage passes to a TAFKAL80ETC concert',
   Sulfuras = 'Sulfuras, Hand of Ragnaros',
+  Conjured = 'Conjured',
 }
 
 export class GildedRose {
@@ -33,6 +34,9 @@ export class GildedRose {
           break
         case ItemType.BackstagePasses:
           this.updateBackStagePasses(item);
+          break;
+        case ItemType.Conjured:
+          this.updateConjured(item);
           break;
         default:
           this.updateNormalItem(item);
@@ -70,6 +74,18 @@ export class GildedRose {
 
     if (item.sellIn < 0) {
       item.quality = 0;
+    }
+  }
+
+  private updateConjured(item: Item) {
+    if (item.quality > 0) {
+      item.quality -= 2;
+    }
+
+    item.sellIn -= 1;
+
+    if (item.sellIn < 0 && item.quality > 0) {
+      item.quality -= 2;
     }
   }
 
